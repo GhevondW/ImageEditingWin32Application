@@ -1,0 +1,28 @@
+﻿  stdafx.cpp
+  BoxBlurFilter.cpp
+c:\users\ghevond\desktop\imageapp\imageapp\boxblurfilter.cpp(27): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\boxblurfilter.cpp(37): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\boxblurfilter.cpp(75): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\boxblurfilter.cpp(85): warning C4018: '<': signed/unsigned mismatch
+  BWFilter.cpp
+c:\users\ghevond\desktop\imageapp\imageapp\bwfilter.cpp(22): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\bwfilter.cpp(24): warning C4018: '<': signed/unsigned mismatch
+  FilterBase.cpp
+  Image.cpp
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(11): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(12): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(53): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(55): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(61): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(78): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(116): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(118): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(129): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(137): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\image.cpp(139): warning C4018: '<': signed/unsigned mismatch
+  ImageApp.cpp
+c:\users\ghevond\desktop\imageapp\imageapp\imageapp.cpp(197): warning C4018: '<': signed/unsigned mismatch
+c:\users\ghevond\desktop\imageapp\imageapp\imageapp.cpp(199): warning C4018: '<': signed/unsigned mismatch
+  Pixel.cpp
+  Generating Code...
+  ImageApp.vcxproj -> C:\Users\Ghevond\Desktop\ImageApp\Debug\ImageApp.exe
