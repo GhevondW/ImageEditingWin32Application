@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "ImageApp.h"
-//#include <windows.h>
 #include <ObjIdl.h>
 #include <commctrl.h>
 #include <commdlg.h>
