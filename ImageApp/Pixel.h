@@ -28,12 +28,15 @@ namespace app
 
 		Pixel& operator=(const Pixel& other) = default;
 		Pixel& operator=(Pixel&& other) = default;
+		unsigned char& operator[](int index);
 
 	private:
-		unsigned char R_;
-		unsigned char G_;
-		unsigned char B_;
-		unsigned char A_;
+
+		void init(unsigned char R, unsigned char G, unsigned char B, unsigned char A);
+
+	private:
+		static const int SIZE = 4;
+		unsigned char vect_[SIZE]{};
 	};
 }
 

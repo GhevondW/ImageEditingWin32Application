@@ -3,26 +3,18 @@
 using namespace app;
 
 Pixel::Pixel()
-	:R_(0),
-	G_(0),
-	B_(0),
-	A_(0)
-{}
+{
+	init(0,0,0,0);
+}
 
 Pixel::Pixel(unsigned char R, unsigned char G, unsigned char B, unsigned char A)
-	:R_(R),
-	G_(G),
-	B_(B),
-	A_(A)
-{}
+{
+	init(R,G,B,A);
+}
 
 Pixel::Pixel(unsigned char avg, unsigned char A)
-	:R_(avg),
-	G_(avg),
-	B_(avg),
-	A_(A)
 {
-
+	init(avg,avg,avg,A);
 }
 
 Pixel::~Pixel()
@@ -31,27 +23,41 @@ Pixel::~Pixel()
 
 
 unsigned char Pixel::get_R() const {
-	return R_;
+	return vect_[0];
 }
 unsigned char Pixel::get_G() const {
-	return G_;
+	return vect_[1];
 }
 unsigned char Pixel::get_B() const {
-	return B_;
+	return vect_[2];
 }
 unsigned char Pixel::get_A() const {
-	return A_;
+	return vect_[3];
 }
 
 void Pixel::set_R(const unsigned char R) {
-	R_ = R;
+	vect_[0] = R;
 }
 void Pixel::set_G(const unsigned char G) {
-	G_ = G;
+	vect_[1] = G;
 }
 void Pixel::set_B(const unsigned char B) {
-	B_ = B;
+	vect_[2] = B;
 }
 void Pixel::set_A(const unsigned char A) {
-	A_ = A;
+	vect_[3] = A;
+}
+
+void Pixel::init(unsigned char R, unsigned char G, unsigned char B, unsigned char A) {
+	vect_[0] = R;
+	vect_[1] = G;
+	vect_[2] = B;
+	vect_[3] = A;
+}
+
+unsigned char& Pixel::operator[](int index) {
+	if (index < 0 || index >= SIZE) {
+		throw "invalid operation";
+	}
+	return vect_[index];
 }

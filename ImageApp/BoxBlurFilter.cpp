@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "BoxBlurFilter.h"
+#include "ThreadJoiner.h"
+#include <mutex>
+
 using namespace app;
 
 BoxBlurFilter::BoxBlurFilter()
@@ -24,99 +27,92 @@ BoxBlurFilter::~BoxBlurFilter()
 }
 
 void BoxBlurFilter::horizontal_motion_blur(Image* new_image)const {
-	for (size_t i = 0; i < image_->get_height(); i++)
-	{
-		int sum_r = 0;
-		int sum_g = 0;
-		int sum_b = 0;
+	
+	
 
-		int result_avg_r = 0;
-		int result_avg_g = 0;
-		int result_avg_b = 0;
-
-		for (size_t x = 0; x < radius_; x++)
+	auto func = [&](int c) {
+		for (size_t i = 0; i < image_->get_height(); i++)
 		{
-			auto pixel = image_->at(i, x);
-			sum_r += pixel.get_R();
-			sum_g += pixel.get_G();
-			sum_b += pixel.get_B();
-		}
+			int sum = 0;
+			int result_avg = 0;
 
-		result_avg_r = sum_r / radius_;
-		result_avg_g = sum_g / radius_;
-		result_avg_b = sum_b / radius_;
-
-		for (int j = 0; j < image_->get_width(); j++)
-		{
-			if (j - radius_ / 2 >= 0 && j + 1 + radius_ / 2 < image_->get_width()) {
-				auto temp_old_pixel = image_->at(i, j - radius_ / 2);
-
-				sum_r -= temp_old_pixel.get_R();
-				sum_g -= temp_old_pixel.get_G();
-				sum_b -= temp_old_pixel.get_B();
-
-				auto temp_new_pixel = image_->at(i, j + 1 + radius_ / 2);
-				sum_r += temp_new_pixel.get_R();
-				sum_g += temp_new_pixel.get_G();
-				sum_b += temp_new_pixel.get_B();
-
-				result_avg_r = sum_r / radius_;
-				result_avg_g = sum_g / radius_;
-				result_avg_b = sum_b / radius_;
-
+			for (size_t x = 0; x < radius_; x++)
+			{
+				auto pixel = image_->at(i, x);
+				sum += pixel[c];
 			}
-			new_image->at(i, j) = std::move(app::Pixel(result_avg_r,result_avg_g,result_avg_b));
-		}
+			result_avg = sum / radius_;
 
-	}
+			for (int j = 0; j < image_->get_width(); j++)
+			{
+				if (j - radius_ / 2 >= 0 && j + 1 + radius_ / 2 < image_->get_width()) {
+					auto temp_old_pixel = image_->at(i, j - radius_ / 2);
+
+					sum -= temp_old_pixel[c];
+					
+
+					auto temp_new_pixel = image_->at(i, j + 1 + radius_ / 2);
+					sum += temp_new_pixel[c];
+					
+					result_avg = sum / radius_;					
+
+				}
+				
+				new_image->at(i, j)[c] = result_avg;
+			}
+		}
+	};
+	
+	std::thread thread_red(func,0);
+	std::thread thread_green(func,1);
+	std::thread thread_blue(func,2);
+
+	ThreadJoiner join_red(thread_red);
+	ThreadJoiner join_green(thread_green);
+	ThreadJoiner join_blue(thread_blue);
+
 }
 
 void BoxBlurFilter::vertical_motion_blur(Image* new_image)const {
-	for (size_t j = 0; j < image_->get_width(); j++)
-	{
-		int sum_r = 0;
-		int sum_g = 0;
-		int sum_b = 0;
 
-		int result_avg_r = 0;
-		int result_avg_g = 0;
-		int result_avg_b = 0;
-
-		for (size_t x = 0; x < radius_; x++)
-		{
-			auto pixel = image_->at(x, j);
-			sum_r += pixel.get_R();
-			sum_g += pixel.get_G();
-			sum_b += pixel.get_B();
-		}
-
-		result_avg_r = sum_r / radius_;
-		result_avg_g = sum_g / radius_;
-		result_avg_b = sum_b / radius_;
-
-		for (int i = 0; i < image_->get_height(); i++)
-		{
-			if (i - radius_ / 2 >= 0 && i + 1 + radius_ / 2 < image_->get_height()) {
-				auto temp_old_pixel = image_->at(i - radius_ / 2, j);
-
-				sum_r -= temp_old_pixel.get_R();
-				sum_g -= temp_old_pixel.get_G();
-				sum_b -= temp_old_pixel.get_B();
-
-				auto temp_new_pixel = image_->at(i + 1 + radius_ / 2, j);
-				sum_r += temp_new_pixel.get_R();
-				sum_g += temp_new_pixel.get_G();
-				sum_b += temp_new_pixel.get_B();
-
-				result_avg_r = sum_r / radius_;
-				result_avg_g = sum_g / radius_;
-				result_avg_b = sum_b / radius_;
-
+	auto func = [&](int c) {
+		for (size_t j = 0; j < image_->get_width(); j++) {
+			
+			int sum = 0;
+			int result_avg = 0;
+			for (size_t x = 0; x < radius_; x++)
+			{
+				auto pixel = image_->at(x, j);
+				sum += pixel[c];
+				
 			}
-			new_image->at(i, j) = std::move(app::Pixel(result_avg_r, result_avg_g, result_avg_b));
-		}
+			result_avg = sum / radius_;
+			for (int i = 0; i < image_->get_height(); i++)
+			{
+				if (i - radius_ / 2 >= 0 && i + 1 + radius_ / 2 < image_->get_height()) {
+					auto temp_old_pixel = image_->at(i - radius_ / 2, j);
 
-	}
+					sum -= temp_old_pixel[c];
+
+					auto temp_new_pixel = image_->at(i + 1 + radius_ / 2, j);
+					sum += temp_new_pixel[c];
+
+					result_avg = sum / radius_;
+
+				}
+				new_image->at(i, j)[c] = result_avg;
+			}
+		}
+	};
+
+	std::thread thread_red(func, 0);
+	std::thread thread_green(func, 1);
+	std::thread thread_blue(func, 2);
+
+	ThreadJoiner join_red(thread_red);
+	ThreadJoiner join_green(thread_green);
+	ThreadJoiner join_blue(thread_blue);
+
 }
 
 Image* BoxBlurFilter::filter() const{

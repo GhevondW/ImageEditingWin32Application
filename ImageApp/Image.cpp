@@ -129,6 +129,10 @@ void Image::init_data() {
 	for (size_t i = 0; i < height_; i++)
 	{
 		data_[i] = new Pixel[width_];
+		for (size_t j = 0; j < width_; j++)
+		{
+			data_[i][j] = std::move(Pixel(0,0,0));
+		}
 	}
 }
 

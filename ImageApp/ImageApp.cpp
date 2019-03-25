@@ -29,6 +29,8 @@ namespace
 
 	HWND dialog{};
 
+	int radius = 1;
+
 	std::unique_ptr<app::Image> main_image = nullptr;
 	std::unique_ptr<app::FilterBase> filter = nullptr;
 }
@@ -129,8 +131,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 			return TRUE;
 		}
-		else if (LOWORD(wParam) == ID_BOX_BLUR) {
-			int radius = SendMessage(GetDlgItem(dialog, ID_SLIDER), TBM_GETPOS, 0, 0);
+		else if (LOWORD(wParam) == ID_BOX_BLUR) {			
 			if (main_image != nullptr) {
 				filter.release();
 				filter.reset(new app::BoxBlurFilter(main_image.get(),radius));
@@ -178,10 +179,10 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		}
 		return FALSE;
 	}
-	/*else if (message == WM_HSCROLL) {
-		HWND slider = GetDlgItem(dialog, ID_SLIDER);
+	else if (message == WM_HSCROLL) {
+		radius = SendMessage(GetDlgItem(dialog, ID_SLIDER), TBM_GETPOS, 0, 0);;
 		return FALSE;
-	}*/
+	}
 	else if (message == WM_DESTROY) {
 		PostQuitMessage(0);
 		return TRUE;
