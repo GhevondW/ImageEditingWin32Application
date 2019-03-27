@@ -13,6 +13,7 @@
 #include "FilterBase.h"
 #include "BWFilter.h"
 #include "BoxBlurFilter.h"
+#include "BoxBlurHelper.h"
 
 #pragma comment (lib,"Gdiplus.lib")
 
@@ -28,7 +29,9 @@ namespace
 
 	HWND dialog{};
 
-	int radius = 1;
+	//int radius = 1;
+
+	app::BoxBlurHelper* box_blur_helper = new app::BoxBlurHelper(1);
 
 	std::unique_ptr<app::Image> main_image = nullptr;
 	std::unique_ptr<app::FilterBase> filter = nullptr;
@@ -115,6 +118,11 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	{
 		if(LOWORD(wParam) == ID_BTN_RUN_FILTER) {
 
+			if (main_image == nullptr) {
+				MessageBox(NULL, "Please select an image!!!", "Status", NULL);
+				return TRUE;
+			}
+
 			if (filter != nullptr) {
 			
 				std::unique_ptr<app::Image> new_image(filter->filter());
@@ -133,8 +141,9 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		else if (LOWORD(wParam) == ID_BOX_BLUR) {			
 			if (main_image != nullptr) {
 				filter.release();
-				filter.reset(new app::BoxBlurFilter(main_image.get(),radius));
+				filter.reset(new app::BoxBlurFilter(main_image.get(),box_blur_helper));
 			}
+			
 			return TRUE;
 		}
 		else if (LOWORD(wParam) == ID_BLACK_WHITE) {
@@ -142,6 +151,7 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				filter.release();
 				filter.reset(new app::BWFilter(main_image.get()));
 			}
+			
 			return TRUE;
 		}
 		else if (LOWORD(wParam) == ID_OPEN) {
@@ -179,7 +189,8 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		return FALSE;
 	}
 	else if (message == WM_HSCROLL) {
-		radius = SendMessage(GetDlgItem(dialog, ID_SLIDER), TBM_GETPOS, 0, 0);;
+		int radius = SendMessage(GetDlgItem(dialog, ID_SLIDER), TBM_GETPOS, 0, 0);;
+		box_blur_helper->set_value(radius);
 		return FALSE;
 	}
 	else if (message == WM_DESTROY) {

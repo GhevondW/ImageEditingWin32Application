@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BoxBlurFilter.h" />
+    <ClInclude Include="BoxBlurHelper.h" />
     <ClInclude Include="BWFilter.h" />
     <ClInclude Include="C:\Users\Ghevond\Desktop\Demo_VC6\Demo\Resource.h" />
     <ClInclude Include="FilterBase.h" />
@@ -161,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoxBlurFilter.cpp" />
+    <ClCompile Include="BoxBlurHelper.cpp" />
     <ClCompile Include="BWFilter.cpp" />
     <ClCompile Include="FilterBase.cpp" />
     <ClCompile Include="Image.cpp" />

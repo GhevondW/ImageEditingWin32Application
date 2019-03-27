@@ -48,6 +48,9 @@
     <ClInclude Include="ThreadJoiner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BoxBlurHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -69,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BoxBlurFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxBlurHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

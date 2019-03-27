@@ -1,19 +1,17 @@
 #include "FilterBase.h"
-
-
-
-
-#ifndef _BOX_BLUR_FILTER_H__
-#define _BOX_BLUR_FILTER_H__
+#include "BoxBlurHelper.h"
 
 namespace app
 {
+
+#ifndef _BOX_BLUR_FILTER_H__
+#define _BOX_BLUR_FILTER_H__
 	class BoxBlurFilter :
 		public FilterBase
 	{
 	public:
 		BoxBlurFilter();
-		BoxBlurFilter(Image* image, int radius);
+		BoxBlurFilter(Image* image, BoxBlurHelper* helper);
 		virtual ~BoxBlurFilter();
 
 		Image* filter() const override;
@@ -24,12 +22,10 @@ namespace app
 		void vertical_motion_blur(Image* new_image) const;
 
 	private:
-		int radius_;
+		BoxBlurHelper* helper_;
 	};
-}
-
 #endif // !_BOX_BLUR_FILTER_H__
-
+}
 
 
 

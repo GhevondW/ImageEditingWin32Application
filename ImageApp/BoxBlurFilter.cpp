@@ -2,24 +2,21 @@
 #include "BoxBlurFilter.h"
 #include "ThreadJoiner.h"
 #include <mutex>
+#include "BoxBlurHelper.h"
 
 using namespace app;
 
 BoxBlurFilter::BoxBlurFilter()
 	:FilterBase(nullptr),
-	radius_(1)
+	helper_(new BoxBlurHelper(1))
 {
 }
 
-BoxBlurFilter::BoxBlurFilter(Image* image,int radius) 
-	:FilterBase(image)
+BoxBlurFilter::BoxBlurFilter(Image* image,BoxBlurHelper* helper)
+	:FilterBase(image),
+	helper_(helper)
 {
-	if (radius > 0 && radius <= 15) {
-		radius_ = radius*2 + 1;
-	}
-	else {
-		radius_ = 3;
-	}
+	
 }
 
 BoxBlurFilter::~BoxBlurFilter()
@@ -28,7 +25,7 @@ BoxBlurFilter::~BoxBlurFilter()
 
 void BoxBlurFilter::horizontal_motion_blur(Image* new_image)const {
 	
-	
+	int radius_ = helper_->get_value()*2 + 1;
 
 	auto func = [&](int c) {
 		for (size_t i = 0; i < image_->get_height(); i++)
@@ -74,6 +71,8 @@ void BoxBlurFilter::horizontal_motion_blur(Image* new_image)const {
 }
 
 void BoxBlurFilter::vertical_motion_blur(Image* new_image)const {
+
+	int radius_ = helper_->get_value()*2 + 1;
 
 	auto func = [&](int c) {
 		for (size_t j = 0; j < image_->get_width(); j++) {
