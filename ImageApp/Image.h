@@ -21,6 +21,7 @@ namespace app
 
 		
 		Pixel& at(const int i,const int j);
+		Pixel& at(const int index);
 
 	public:
 
@@ -35,12 +36,14 @@ namespace app
 
 		int get_width() const;
 		int get_height() const;
+		BYTE* get_buffer() const;
 
 	private:
 		int width_;
 		int height_;
 
-		Pixel** data_;
+		int data_size_;
+		Pixel* data_;
 	};
 
 }

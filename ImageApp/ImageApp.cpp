@@ -30,7 +30,7 @@ namespace
 	HWND dialog{};
 
 	//int radius = 1;
-
+	INT iStride = 0;
 	app::BoxBlurHelper* box_blur_helper = new app::BoxBlurHelper(1);
 
 	std::unique_ptr<app::Image> main_image = nullptr;
@@ -110,27 +110,29 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		return FALSE;
 	}
 
-	if (message == WM_CLOSE) {
-		DestroyWindow(hWnd);
-		return TRUE;
-	}
-	else if(message == WM_COMMAND)
+	switch (message)
 	{
-		if(LOWORD(wParam) == ID_BTN_RUN_FILTER) {
-
+	case WM_CLOSE:
+	{
+		DestroyWindow(hWnd);
+		break;
+	}	
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+		case ID_BTN_RUN_FILTER:
+		{
 			if (main_image == nullptr) {
 				MessageBox(NULL, "Please select an image!!!", "Status", NULL);
 				return TRUE;
 			}
 
 			if (filter != nullptr) {
-			
+
 				std::unique_ptr<app::Image> new_image(filter->filter());
-				
 				std::unique_ptr<Gdiplus::Bitmap> bmp(get_bitmap(new_image.get()));
-
 				HBITMAP img = NULL;
-
 				bmp->GetHBITMAP(0, &img);
 
 				SendDlgItemMessage(hWnd, ID_PICTURE_CONTROL, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)img);
@@ -138,33 +140,32 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 			return TRUE;
 		}
-		else if (LOWORD(wParam) == ID_BOX_BLUR) {			
+		case ID_BOX_BLUR:
+		{
 			if (main_image != nullptr) {
 				filter.release();
-				filter.reset(new app::BoxBlurFilter(main_image.get(),box_blur_helper));
+				filter.reset(new app::BoxBlurFilter(main_image.get(), box_blur_helper));
 			}
-			
 			return TRUE;
 		}
-		else if (LOWORD(wParam) == ID_BLACK_WHITE) {
+		case ID_BLACK_WHITE:
+		{
 			if (main_image != nullptr) {
 				filter.release();
 				filter.reset(new app::BWFilter(main_image.get()));
 			}
-			
+
 			return TRUE;
 		}
-		else if (LOWORD(wParam) == ID_OPEN) {
-
+		case ID_OPEN:
+		{
 			std::string image_path = get_image_path(hWnd);
 
 			if (!image_path.empty()) {
-				std::wstring str(image_path.begin(),image_path.end());
-				
-				std::unique_ptr<Bitmap> bmp(new Bitmap(str.c_str(),FALSE));
+				std::wstring str(image_path.begin(), image_path.end());
+
+				std::unique_ptr<Bitmap> bmp(new Bitmap(str.c_str(), FALSE));
 				std::unique_ptr<BitmapData> bitmapData(new BitmapData);
-
-
 				int h = bmp->GetHeight();
 				int w = bmp->GetWidth();
 
@@ -173,49 +174,39 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				bmp->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, bitmapData.get());
 
 				UINT*  pixels = (UINT*)bitmapData->Scan0;
-				INT iStride = abs(bitmapData->Stride);
+				iStride = abs(bitmapData->Stride);
 
 				main_image.release();
-				main_image.reset(new app::Image(w,h,pixels,iStride));
+				main_image.reset(new app::Image(w, h, pixels, iStride));
 
 				HBITMAP img = NULL;
 
-				bmp->GetHBITMAP(0,&img);
+				bmp->GetHBITMAP(0, &img);
 
 				SendDlgItemMessage(hWnd, ID_PICTURE_CONTROL, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)img);
 			}
 			return TRUE;
 		}
-		return FALSE;
+		}
+		break;
 	}
-	else if (message == WM_HSCROLL) {
+	case WM_HSCROLL:
+	{
 		int radius = SendMessage(GetDlgItem(dialog, ID_SLIDER), TBM_GETPOS, 0, 0);;
 		box_blur_helper->set_value(radius);
-		return FALSE;
-	}
-	else if (message == WM_DESTROY) {
+		break;
+	}	
+	case WM_DESTROY:
+	{
 		PostQuitMessage(0);
-		return TRUE;
+		break;
 	}
-
+	}
 	return FALSE;
 }
 
 
 Gdiplus::Bitmap* get_bitmap(app::Image* img) {
-	Gdiplus::Bitmap* bmp = new Bitmap(img->get_width(), img->get_height(), PixelFormat32bppARGB);
-
-	for (size_t i = 0; i < img->get_height(); i++)
-	{
-		for (size_t j = 0; j < img->get_width(); j++)
-		{
-			bmp->SetPixel(j, i, Color(img->at(i, j).get_A(),
-				img->at(i, j).get_R()
-				, img->at(i, j).get_G()
-				, img->at(i, j).get_B())
-			);
-		}
-	}
-
+	Gdiplus::Bitmap* bmp = new Bitmap(img->get_width(), img->get_height(),iStride,PixelFormat32bppARGB,img->get_buffer());
 	return bmp;
 }
