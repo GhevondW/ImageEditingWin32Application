@@ -29,15 +29,31 @@ namespace
 
 	HWND dialog{};
 
-	//int radius = 1;
+	enum class Mode 
+	{
+		origin,
+		processed
+	};
+
+	const int main_area_x = 30;
+	const int main_area_y = 170;
+
+	const int main_area_width = 890;
+	const int main_area_height = 590;
+
+	const RECT main_area{main_area_x,main_area_y,main_area_width + main_area_x,main_area_height + main_area_y};
+	
+	Mode mode = Mode::origin;
+
 	INT iStride = 0;
 	app::BoxBlurHelper* box_blur_helper = new app::BoxBlurHelper(1);
-
+	
 	std::unique_ptr<app::Image> main_image = nullptr;
+	std::unique_ptr<app::Image> processed_image = nullptr;
 	std::unique_ptr<app::FilterBase> filter = nullptr;
 }
 
-BOOL CALLBACK DialogProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT  CALLBACK DialogProc(HWND, UINT, WPARAM, LPARAM);
 Gdiplus::Bitmap* get_bitmap(app::Image* img);
 
 int APIENTRY wWinMain(HINSTANCE hInstance,
@@ -53,6 +69,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 	g_hInst = hInstance;
 
 	dialog = CreateDialog(hInstance, MAKEINTRESOURCE(ID_MAIN_WINDOW), NULL, DialogProc);
+	
 
 	if (!dialog) {
 		MessageBox(NULL, "Could not create dialog", "CreateDialgo", MB_ICONERROR);
@@ -98,15 +115,46 @@ std::string get_image_path(HWND hWnd) {
 	return std::string(ofn.lpstrFile);
 }
 
-BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-
-
+void DrawImage(HDC hDC,HWND& hWnd,app::Image* img)
+{
 	
+	Graphics graphics(hDC);
+	if (img) {
+		std::unique_ptr<Bitmap> img_result(get_bitmap(img));
+		int x = main_area_x;
+		int y = main_area_y;
+
+		int width = main_area_width;
+		int height = main_area_height;
+
+		if (!(img_result->GetHeight() > height)) {
+			height = img_result->GetHeight();
+			y = y + (main_area_height - height) / 2;
+		}
+
+		if (!(img_result->GetWidth() > width)) {
+			width = img_result->GetWidth();
+			x = x + (main_area_width - width) / 2;
+		}
+
+		graphics.DrawImage(img_result.get(),
+			x,
+			y,
+			width,
+			height);
+		
+	}
+
+}
+
+LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
 
 	if (message == WM_INITDIALOG) {
 		HWND sliderConLo = GetDlgItem(hWnd, ID_SLIDER);
 		SendMessage(sliderConLo, TBM_SETRANGE, (WPARAM)1, (LPARAM)MAKELONG(1, 15));
 		SendMessage(sliderConLo, TBM_SETPOS, (WPARAM)1, 0);
+
 		return FALSE;
 	}
 
@@ -129,21 +177,22 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			}
 
 			if (filter != nullptr) {
-
-				std::unique_ptr<app::Image> new_image(filter->filter());
-				std::unique_ptr<Gdiplus::Bitmap> bmp(get_bitmap(new_image.get()));
-				HBITMAP img = NULL;
-				bmp->GetHBITMAP(0, &img);
-
-				SendDlgItemMessage(hWnd, ID_PICTURE_CONTROL, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)img);
+				processed_image.reset(filter->filter());
+				mode = Mode::processed;
+				SendMessage(dialog, WM_PAINT,0, 0);
 			}
 
+			return TRUE;
+		}
+		case ID_SHOW_ORIGIN:
+		{
+			mode = Mode::origin;
+			SendMessage(dialog, WM_PAINT, 0, 0);
 			return TRUE;
 		}
 		case ID_BOX_BLUR:
 		{
 			if (main_image != nullptr) {
-				filter.release();
 				filter.reset(new app::BoxBlurFilter(main_image.get(), box_blur_helper));
 			}
 			return TRUE;
@@ -151,7 +200,6 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		case ID_BLACK_WHITE:
 		{
 			if (main_image != nullptr) {
-				filter.release();
 				filter.reset(new app::BWFilter(main_image.get()));
 			}
 
@@ -176,18 +224,28 @@ BOOL CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				UINT*  pixels = (UINT*)bitmapData->Scan0;
 				iStride = abs(bitmapData->Stride);
 
-				main_image.release();
 				main_image.reset(new app::Image(w, h, pixels, iStride));
 
-				HBITMAP img = NULL;
-
-				bmp->GetHBITMAP(0, &img);
-
-				SendDlgItemMessage(hWnd, ID_PICTURE_CONTROL, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)img);
+				mode = Mode::origin;
+				SendMessage(dialog, WM_PAINT,0,0);
 			}
 			return TRUE;
 		}
 		}
+		break;
+	}
+	case WM_PAINT:
+	{
+		InvalidateRect(hWnd, &main_area, TRUE);
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		if(mode == Mode::origin) {
+			DrawImage(hdc, hWnd,main_image.get());
+		}
+		else if (mode == Mode::processed) {
+			DrawImage(hdc,hWnd,processed_image.get());
+		}
+		EndPaint(hWnd, &ps);
 		break;
 	}
 	case WM_HSCROLL:
