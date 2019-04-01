@@ -84,8 +84,10 @@ BYTE* Image::get_buffer() const {
 
 Image::~Image()
 {
-	delete[] data_;
-	data_ = nullptr;
+	if (data_ != nullptr) {
+		delete[] data_;
+		data_ = nullptr;
+	}
 }
 
 int Image::get_width() const {

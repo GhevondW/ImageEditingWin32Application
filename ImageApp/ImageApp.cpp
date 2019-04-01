@@ -26,7 +26,6 @@ namespace
 {
 	HINSTANCE g_hInst;
 	HWND btn_run_filter{};
-
 	HWND dialog{};
 
 	enum class Mode 
@@ -37,17 +36,13 @@ namespace
 
 	const int main_area_x = 30;
 	const int main_area_y = 170;
-
 	const int main_area_width = 890;
 	const int main_area_height = 590;
 
 	const RECT main_area{main_area_x,main_area_y,main_area_width + main_area_x,main_area_height + main_area_y};
-	
 	Mode mode = Mode::origin;
-
 	INT iStride = 0;
 	app::BoxBlurHelper* box_blur_helper = new app::BoxBlurHelper(1);
-	
 	std::unique_ptr<app::Image> main_image = nullptr;
 	std::unique_ptr<app::Image> processed_image = nullptr;
 	std::unique_ptr<app::FilterBase> filter = nullptr;
@@ -181,6 +176,9 @@ LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				mode = Mode::processed;
 				SendMessage(dialog, WM_PAINT,0, 0);
 			}
+			else {
+				MessageBox(NULL, "Please select the filter type!!!", "Status", NULL);
+			}
 
 			return TRUE;
 		}
@@ -210,6 +208,13 @@ LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			std::string image_path = get_image_path(hWnd);
 
 			if (!image_path.empty()) {
+
+				HWND box_blur_button = GetDlgItem(hWnd, ID_BOX_BLUR);
+				HWND black_white_button = GetDlgItem(hWnd, ID_BLACK_WHITE);
+				SendMessage(box_blur_button, BM_SETCHECK, 0, 0);
+				SendMessage(black_white_button, BM_SETCHECK, 0, 0);
+				filter.reset(nullptr);
+
 				std::wstring str(image_path.begin(), image_path.end());
 
 				std::unique_ptr<Bitmap> bmp(new Bitmap(str.c_str(), FALSE));
