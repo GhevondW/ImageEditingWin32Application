@@ -38,6 +38,7 @@ namespace
 	const int main_area_y = 170;
 	const int main_area_width = 890;
 	const int main_area_height = 590;
+	const int WM_PAINT_PARAM = 123;
 
 	const RECT main_area{main_area_x,main_area_y,main_area_width + main_area_x,main_area_height + main_area_y};
 	Mode mode = Mode::origin;
@@ -174,7 +175,7 @@ LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			if (filter != nullptr) {
 				processed_image.reset(filter->filter());
 				mode = Mode::processed;
-				SendMessage(dialog, WM_PAINT,0, 0);
+				SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
 			}
 			else {
 				MessageBox(NULL, "Please select the filter type!!!", "Status", NULL);
@@ -185,7 +186,7 @@ LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		case ID_SHOW_ORIGIN:
 		{
 			mode = Mode::origin;
-			SendMessage(dialog, WM_PAINT, 0, 0);
+			SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
 			return TRUE;
 		}
 		case ID_BOX_BLUR:
@@ -232,7 +233,7 @@ LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				main_image.reset(new app::Image(w, h, pixels, iStride));
 
 				mode = Mode::origin;
-				SendMessage(dialog, WM_PAINT,0,0);
+				SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM,0);
 			}
 			return TRUE;
 		}
@@ -241,7 +242,11 @@ LRESULT  CALLBACK DialogProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	}
 	case WM_PAINT:
 	{
-		InvalidateRect(hWnd, &main_area, TRUE);
+		//except for the window moving case
+		if (LOWORD(wParam) == WM_PAINT_PARAM) {
+			InvalidateRect(hWnd, &main_area, TRUE);
+		}
+		
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		if(mode == Mode::origin) {
