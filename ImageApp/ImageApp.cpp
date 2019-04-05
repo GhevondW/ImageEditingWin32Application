@@ -123,15 +123,22 @@ void DrawImage(HDC hDC,HWND& hWnd,app::Image* img)
 		int width = main_area_width;
 		int height = main_area_height;
 
-		if (!(img_result->GetHeight() > height)) {
+		if (img_result->GetHeight() < height) {
 			height = img_result->GetHeight();
-			y = y + (main_area_height - height) / 2;
+		}
+		if (img_result->GetWidth() < width) {
+			width = img_result->GetWidth();
 		}
 
-		if (!(img_result->GetWidth() > width)) {
-			width = img_result->GetWidth();
-			x = x + (main_area_width - width) / 2;
+		if (height == main_area_height && width != main_area_width) {
+			width = height / (img_result->GetHeight()/img_result->GetWidth());
 		}
+		else if (width == main_area_width && height != main_area_height) {
+			height = width / (img_result->GetWidth()/img_result->GetHeight());
+		}
+
+		y = y + (main_area_height - height) / 2;
+		x = x + (main_area_width - width) / 2;
 
 		graphics.DrawImage(img_result.get(),
 			x,
