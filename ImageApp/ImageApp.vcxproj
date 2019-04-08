@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BGR.h" />
+    <ClInclude Include="BGRA.h" />
     <ClInclude Include="BoxBlurFilter.h" />
     <ClInclude Include="BoxBlurHelper.h" />
     <ClInclude Include="BWFilter.h" />
@@ -156,18 +158,15 @@
     <ClInclude Include="ImageApp.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RGB.h" />
+    <ClInclude Include="RGBA.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThreadJoiner.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoxBlurFilter.cpp" />
     <ClCompile Include="BoxBlurHelper.cpp" />
-    <ClCompile Include="BWFilter.cpp" />
-    <ClCompile Include="FilterBase.cpp" />
-    <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageApp.cpp" />
-    <ClCompile Include="Pixel.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

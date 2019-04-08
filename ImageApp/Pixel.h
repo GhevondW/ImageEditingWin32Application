@@ -1,43 +1,50 @@
-#pragma once
+#include "RGBA.h"
+#include "BGRA.h"
+#include "BGR.h"
+#include "RGB.h"
+
 #ifndef _PIXEL_H__
 #define _PIXEL_H__
 
 namespace app
 {
+	template<class TYPE = RGBA>
 	class Pixel
 	{
 	public:
-		Pixel();
-		Pixel(unsigned char R,unsigned char G, unsigned char B, unsigned char A = 255);
-		Pixel(unsigned char avg, unsigned char A = 255);
+		Pixel() :Pixel(0,0,0) {};
+		Pixel(unsigned char B, unsigned char G, unsigned char R, unsigned char A = 255) {
+			vect_[0] = B;
+			vect_[1] = G;
+			vect_[2] = R;
+			if (type_.SIZE == 3) {
+				vect_[3] = 255;
+			}
+			else {
+				vect_[3] = A;
+			}
+		}
+		Pixel(unsigned char avg, unsigned char A = 255) :Pixel(avg, avg, avg, A) {}
 		Pixel(const Pixel& other) = default;
 		Pixel(Pixel&& other) = default;
-		~Pixel();
+		~Pixel() {}
 
 	public:
 
-		unsigned char get_R() const;
-		unsigned char get_G() const;
-		unsigned char get_B() const;
-		unsigned char get_A() const;
-
-		void set_R(const unsigned char R);
-		void set_G(const unsigned char G);
-		void set_B(const unsigned char B);
-		void set_A(const unsigned char A);
-
 		Pixel& operator=(const Pixel& other) = default;
 		Pixel& operator=(Pixel&& other) = default;
-		unsigned char& operator[](int index);
+		unsigned char& operator[](int index) {
+			if (index >= 0 && index < type_.SIZE) {
+				return vect_[type_.OFFSET[index]];
+			}
+			throw "invalid operation";
+		}
 
 	private:
-
-		void init(unsigned char R, unsigned char G, unsigned char B, unsigned char A);
-
-	private:
-		static const int SIZE = 4;
-		unsigned char vect_[SIZE]{};
+		static const TYPE type_;
+		unsigned char vect_[4];
 	};
+
 }
 
 

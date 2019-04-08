@@ -1,27 +1,29 @@
 #include "Image.h"
 
-namespace app 
-{
 #ifndef _FILTER_BASE_H__
 #define _FILTER_BASE_H__
-
-
+namespace app 
+{
+	template<class TYPE = RGBA>
 	class FilterBase
 	{
 	public:
-		FilterBase(Image* image);
-		FilterBase();
-		~FilterBase();
+		FilterBase(Image<TYPE>* img) {
+			image_ = img;
+		}
+		FilterBase() {
+			image_ = nullptr;
+		}
+		~FilterBase() {}
 
 	public:
 
-		virtual Image* filter()const = 0;
+		virtual Image<TYPE>* filter()const = 0;
 
 	protected:
-		app::Image* image_;
+		Image<TYPE>* image_;
 	};
 
-#endif // !_FILTER_BASE_H__
 }
-
+#endif // !_FILTER_BASE_H__
 
