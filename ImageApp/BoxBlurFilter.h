@@ -38,6 +38,7 @@ namespace app
 		void horizontal_motion_blur(image* new_image) const {
 		
 			int radius_ = helper_->get_value() * 2 + 1;
+			radius_ = (radius_) % (this->image_->get_width());
 
 			auto func = [&](int c) {
 				for (size_t i = 0; i < this->image_->get_height(); i++)
@@ -83,6 +84,7 @@ namespace app
 		}
 		void vertical_motion_blur(image* new_image) const {
 			int radius_ = helper_->get_value() * 2 + 1;
+			radius_ = (radius_) % (this->image_->get_height());
 
 			auto func = [&](int c) {
 				for (size_t j = 0; j < this->image_->get_width(); j++) {
