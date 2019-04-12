@@ -1,6 +1,6 @@
 // ImageApp.cpp : Defines the entry point for the application.
 //
-
+#include <Windows.h>
 #include "stdafx.h"
 #include "ImageApp.h"
 #include <ObjIdl.h>
@@ -39,6 +39,11 @@ namespace
 	const int main_area_width = 890;
 	const int main_area_height = 590;
 	const int WM_PAINT_PARAM = 123;
+
+	int real_x{};
+	int real_y{};
+	int real_width{};
+	int real_height{};
 
 	typedef app::Image<app::BGRA> Image;
 	typedef app::FilterBase<app::BGRA> FilterBase;
@@ -143,6 +148,11 @@ namespace
 			y = y + (main_area_height - height) / 2;
 			x = x + (main_area_width - width) / 2;
 
+			real_x =  x;
+			real_y =  y;
+			real_width = width;
+			real_height = height;
+
 			graphics.DrawImage(img_result.get(),
 				x,
 				y,
@@ -191,12 +201,6 @@ namespace
 					MessageBox(NULL, "Please select the filter type!!!", "Status", NULL);
 				}
 
-				return TRUE;
-			}
-			case ID_SHOW_ORIGIN:
-			{
-				mode = Mode::origin;
-				SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
 				return TRUE;
 			}
 			case ID_BOX_BLUR:
@@ -248,6 +252,20 @@ namespace
 				return TRUE;
 			}
 			}
+			break;
+		}
+		case WM_LBUTTONDOWN:
+		{
+			int x = LOWORD(lParam);
+			int y = HIWORD(lParam);
+
+			if (x >= real_x && x <= real_x + real_width) {
+				if (y >= real_y && y <= real_y + real_height) {
+					mode = Mode::origin;
+					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
+				}
+			}
+
 			break;
 		}
 		case WM_PAINT:
