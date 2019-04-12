@@ -14,7 +14,7 @@ namespace app
 		FilterBase() {
 			image_ = nullptr;
 		}
-		~FilterBase() {}
+		virtual ~FilterBase() {};
 
 	public:
 

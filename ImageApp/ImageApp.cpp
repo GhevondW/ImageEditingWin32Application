@@ -14,6 +14,7 @@
 #include "BWFilter.h"
 #include "BoxBlurFilter.h"
 #include "BoxBlurHelper.h"
+#include "InvertFilter.h"
 
 
 #pragma comment (lib,"Gdiplus.lib")
@@ -49,6 +50,7 @@ namespace
 	typedef app::FilterBase<app::BGRA> FilterBase;
 	typedef app::BoxBlurFilter<app::BGRA> BoxBlurFilter;
 	typedef app::BWFilter<app::BGRA> BWFilter;
+	typedef app::InvertFilter<app::BGRA> InvertFilter;
 
 	const RECT main_area{main_area_x,main_area_y,main_area_width + main_area_x,main_area_height + main_area_y};
 	Mode mode = Mode::origin;
@@ -77,6 +79,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 	g_hInst = hInstance;
 
 	dialog = CreateDialog(hInstance, MAKEINTRESOURCE(ID_MAIN_WINDOW), NULL, DialogProc);
+	
 	
 
 	if (!dialog) {
@@ -140,7 +143,7 @@ namespace
 				width = main_area_width;
 				height = (main_area_width * img_result->GetHeight()) / (img_result->GetWidth());
 			}
-			else if (height > main_area_height && height >= width) {
+			else if (height > main_area_height) {
 				height = main_area_height;
 				width = (main_area_height * img_result->GetWidth()) / (img_result->GetHeight());
 			}
@@ -171,6 +174,9 @@ namespace
 			SendMessage(sliderConLo, TBM_SETRANGE, (WPARAM)1, (LPARAM)MAKELONG(1, 15));
 			SendMessage(sliderConLo, TBM_SETPOS, (WPARAM)1, 0);
 
+			EnableWindow(GetDlgItem(hWnd, ID_BTN_RUN_FILTER), FALSE);
+			EnableWindow(GetDlgItem(hWnd, ID_SLIDER), FALSE);
+			
 			return FALSE;
 		}
 
@@ -207,6 +213,8 @@ namespace
 			{
 				if (main_image != nullptr) {
 					filter.reset(new BoxBlurFilter(main_image.get(), box_blur_helper));
+					EnableWindow(GetDlgItem(hWnd, ID_BTN_RUN_FILTER), TRUE);
+					EnableWindow(GetDlgItem(hWnd, ID_SLIDER), TRUE);
 				}
 				return TRUE;
 			}
@@ -214,8 +222,19 @@ namespace
 			{
 				if (main_image != nullptr) {
 					filter.reset(new BWFilter(main_image.get()));
+					EnableWindow(GetDlgItem(hWnd, ID_BTN_RUN_FILTER), TRUE);
+					EnableWindow(GetDlgItem(hWnd, ID_SLIDER), FALSE);
 				}
 
+				return TRUE;
+			}
+			case ID_INVERT_FILTER:
+			{
+				if (main_image != nullptr) {
+					filter.reset(new InvertFilter(main_image.get()));
+					EnableWindow(GetDlgItem(hWnd, ID_BTN_RUN_FILTER), TRUE);
+					EnableWindow(GetDlgItem(hWnd, ID_SLIDER), FALSE);
+				}
 				return TRUE;
 			}
 			case ID_OPEN:
@@ -226,8 +245,15 @@ namespace
 
 					HWND box_blur_button = GetDlgItem(hWnd, ID_BOX_BLUR);
 					HWND black_white_button = GetDlgItem(hWnd, ID_BLACK_WHITE);
+					HWND invert_filter_button = GetDlgItem(hWnd, ID_INVERT_FILTER);
+
 					SendMessage(box_blur_button, BM_SETCHECK, 0, 0);
 					SendMessage(black_white_button, BM_SETCHECK, 0, 0);
+					SendMessage(invert_filter_button, BM_SETCHECK, 0, 0);
+
+					EnableWindow(GetDlgItem(hWnd, ID_BTN_RUN_FILTER), FALSE);
+					EnableWindow(GetDlgItem(hWnd, ID_SLIDER), FALSE);
+
 					filter.reset(nullptr);
 
 					std::wstring str(image_path.begin(), image_path.end());
@@ -248,6 +274,7 @@ namespace
 
 					mode = Mode::origin;
 					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
+					
 				}
 				return TRUE;
 			}

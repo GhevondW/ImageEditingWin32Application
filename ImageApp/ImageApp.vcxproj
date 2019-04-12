@@ -156,6 +156,7 @@
     <ClInclude Include="FilterBase.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageApp.h" />
+    <ClInclude Include="InvertFilter.h" />
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RGB.h" />
