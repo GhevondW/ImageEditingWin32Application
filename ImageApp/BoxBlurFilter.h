@@ -41,12 +41,12 @@ namespace app
 			radius_ = (radius_) % (this->image_->get_width());
 
 			auto func = [&](int c) {
-				for (size_t i = 0; i < this->image_->get_height(); i++)
+				for (int i = 0; i < this->image_->get_height(); i++)
 				{
 					int sum = 0;
 					int result_avg = 0;
 
-					for (size_t x = 0; x < radius_; x++)
+					for (int x = 0; x < radius_; x++)
 					{
 						auto pixel = this->image_->at(i, x);
 						sum += pixel[c];
@@ -87,11 +87,11 @@ namespace app
 			radius_ = (radius_) % (this->image_->get_height());
 
 			auto func = [&](int c) {
-				for (size_t j = 0; j < this->image_->get_width(); j++) {
+				for (int j = 0; j < this->image_->get_width(); j++) {
 
 					int sum = 0;
 					int result_avg = 0;
-					for (size_t x = 0; x < radius_; x++)
+					for (int x = 0; x < radius_; x++)
 					{
 						auto pixel = this->image_->at(x, j);
 						sum += pixel[c];

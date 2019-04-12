@@ -24,9 +24,9 @@ namespace app
 			int middle = new_image->get_height() / 2;
 
 			auto func = [&](int begin, int end) {
-				for (size_t i = begin; i < end; i++)
+				for (int i = begin; i < end; i++)
 				{
-					for (size_t j = 0; j < new_image->get_width(); j++)
+					for (int j = 0; j < new_image->get_width(); j++)
 					{
 						int r = (int)this->image_->at(i, j)[0];
 						int g = (int)this->image_->at(i, j)[1];

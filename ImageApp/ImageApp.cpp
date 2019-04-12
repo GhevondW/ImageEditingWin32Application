@@ -128,21 +128,16 @@ namespace
 			int x = main_area_x;
 			int y = main_area_y;
 
-			int width = main_area_width;
-			int height = main_area_height;
+			int width = img_result->GetWidth();
+			int height = img_result->GetHeight();
 
-			if (img_result->GetHeight() < height) {
-				height = img_result->GetHeight();
+			if (width > main_area_width && width >= height) {
+				width = main_area_width;
+				height = (main_area_width * img_result->GetHeight()) / (img_result->GetWidth());
 			}
-			if (img_result->GetWidth() < width) {
-				width = img_result->GetWidth();
-			}
-
-			if (height == main_area_height && width != main_area_width) {
-				width = height / (img_result->GetHeight() / img_result->GetWidth());
-			}
-			else if (width == main_area_width && height != main_area_height) {
-				height = width / (img_result->GetWidth() / img_result->GetHeight());
+			else if (height > main_area_height && height >= width) {
+				height = main_area_height;
+				width = (main_area_height * img_result->GetWidth()) / (img_result->GetHeight());
 			}
 
 			y = y + (main_area_height - height) / 2;

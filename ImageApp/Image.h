@@ -31,11 +31,7 @@ namespace app
 					int a = (curColor & 0xff000000) >> 24;
 
 
-					data_[row*width_ + col] = pixel(
-						std::abs(b),
-						std::abs(g),
-						std::abs(r),
-						std::abs(a));
+					data_[row*width_ + col] = pixel(b,g,r,a);
 				}
 		}
 		Image(const int width, const int height)
