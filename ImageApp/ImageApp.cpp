@@ -139,13 +139,28 @@ namespace
 			int width = img_result->GetWidth();
 			int height = img_result->GetHeight();
 
-			if (width > main_area_width && width >= height) {
+			auto calculate_width_height = [&]() {
 				width = main_area_width;
 				height = (main_area_width * img_result->GetHeight()) / (img_result->GetWidth());
-			}
-			else if (height > main_area_height) {
+			};
+			auto calculate_height_width = [&]() {
 				height = main_area_height;
 				width = (main_area_height * img_result->GetWidth()) / (img_result->GetHeight());
+			};
+
+			if (width > main_area_width && height > main_area_height) {
+				if (width >= height*1.4) {
+					calculate_width_height();
+				}
+				else {
+					calculate_height_width();
+				}
+			}
+			else if (width > main_area_width) {
+				calculate_width_height();
+			}
+			else if(height > main_area_height){
+				calculate_height_width();
 			}
 
 			y = y + (main_area_height - height) / 2;
