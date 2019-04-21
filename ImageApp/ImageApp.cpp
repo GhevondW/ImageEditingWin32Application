@@ -9,13 +9,8 @@
 #include <memory>
 #include <string>
 #include <gdiplus.h>
-#include "Image.h"
-#include "FilterBase.h"
-#include "BWFilter.h"
-#include "BoxBlurFilter.h"
-#include "BoxBlurHelper.h"
-#include "InvertFilter.h"
 #include "Types.h"
+
 
 
 #pragma comment (lib,"Gdiplus.lib")
@@ -56,6 +51,7 @@ namespace
 	std::unique_ptr<Image> main_image = nullptr;
 	std::unique_ptr<Image> processed_image = nullptr;
 	std::unique_ptr<FilterBase> filter = nullptr;
+	std::unique_ptr<Histogram> main_image_hist = nullptr;
 
 	LRESULT  CALLBACK DialogProc(HWND, UINT, WPARAM, LPARAM);
 	Gdiplus::Bitmap* get_bitmap(Image* img);
@@ -249,6 +245,18 @@ namespace
 				}
 				return TRUE;
 			}
+			case ID_BTN_HIST:
+			{
+				if (main_image != nullptr) {
+
+					main_image_hist.reset(new Histogram(main_image.get()));
+					processed_image.reset(main_image_hist->get_hist());
+
+					mode = Mode::processed;
+					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
+				}
+				return TRUE;
+			}
 			case ID_OPEN:
 			{
 				std::string image_path = get_image_path(hWnd);
@@ -283,6 +291,7 @@ namespace
 					iStride = abs(bitmapData->Stride);
 
 					main_image.reset(new Image(w, h, pixels, iStride));
+					main_image_hist.reset(nullptr);
 
 					mode = Mode::origin;
 					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);

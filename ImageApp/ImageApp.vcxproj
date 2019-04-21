@@ -154,6 +154,7 @@
     <ClInclude Include="BWFilter.h" />
     <ClInclude Include="C:\Users\Ghevond\Desktop\Demo_VC6\Demo\Resource.h" />
     <ClInclude Include="FilterBase.h" />
+    <ClInclude Include="Histogram.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageApp.h" />
     <ClInclude Include="InvertFilter.h" />

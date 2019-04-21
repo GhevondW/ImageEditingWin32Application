@@ -23,6 +23,8 @@
 #define ID_INVERT_FILTER                1005
 #define ID_OPEN                         1006
 #define ID_PICTURE_CONTROL              1007
+#define ID_OPEN2                        1007
+#define ID_BTN_HIST                     1007
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
