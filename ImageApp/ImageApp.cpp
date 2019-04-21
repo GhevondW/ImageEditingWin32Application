@@ -184,6 +184,7 @@ namespace
 
 			EnableWindow(GetDlgItem(hWnd, ID_BTN_RUN_FILTER), FALSE);
 			EnableWindow(GetDlgItem(hWnd, ID_SLIDER), FALSE);
+			EnableWindow(GetDlgItem(hWnd,ID_BTN_HIST),FALSE);
 			
 			return FALSE;
 		}
@@ -201,11 +202,7 @@ namespace
 			{
 			case ID_BTN_RUN_FILTER:
 			{
-				if (main_image == nullptr) {
-					MessageBox(NULL, "Please select an image!!!", "Status", NULL);
-					return TRUE;
-				}
-
+				
 				if (filter != nullptr) {
 					processed_image.reset(filter->filter());
 					mode = Mode::processed;
@@ -294,8 +291,9 @@ namespace
 					main_image_hist.reset(nullptr);
 
 					mode = Mode::origin;
+					processed_image.reset(nullptr);
 					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
-					
+					EnableWindow(GetDlgItem(hWnd, ID_BTN_HIST), TRUE);
 				}
 				return TRUE;
 			}
@@ -304,15 +302,20 @@ namespace
 		}
 		case WM_LBUTTONDOWN:
 		{
-			if (mode == Mode::processed) {
-				int x = LOWORD(lParam);
-				int y = HIWORD(lParam);
-
-				if (x >= real_x && x <= real_x + real_width) {
-					if (y >= real_y && y <= real_y + real_height) {
+			int x = LOWORD(lParam);
+			int y = HIWORD(lParam);
+			
+			if (x >= real_x && x <= real_x + real_width) {
+				if (y >= real_y && y <= real_y + real_height) {
+					if (mode == Mode::processed) {
 						mode = Mode::origin;
-						SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
 					}
+					else{
+						if (processed_image != nullptr) {
+							mode = Mode::processed;
+						}
+					}
+					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
 				}
 			}
 			break;
