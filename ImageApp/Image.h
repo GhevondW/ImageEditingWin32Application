@@ -15,6 +15,7 @@ namespace app
 		Image(const int width, const int height, const UINT* data, int stride) 
 			:width_(width),
 			height_(height),
+			stride_(stride),
 			data_size_(width*height)
 		{
 			init_data();
@@ -39,6 +40,14 @@ namespace app
 			height_(height),
 			data_size_(width*height)
 		{
+
+			int stride = width * 32;  
+			stride += 31;           
+			stride /= 32;        
+			stride *= 4;
+
+			stride_ = stride;
+
 			init_data();
 		}
 		Image(const Image& other) {
@@ -47,6 +56,7 @@ namespace app
 		Image() 
 			:width_(0),
 			height_(0),
+			stride_(0),
 			data_size_(0)
 		{
 			data_size_ = nullptr;
@@ -97,15 +107,12 @@ namespace app
 			this->width_ = other.width_;
 			this->height_ = other.height_;
 			this->data_size_ = width_ * height_;
+			this->stride_ = other.stride_;
 
 			if (data_) {
 				delete[] data_;
 			}
-			data_ = new pixel[data_size_];
-			for (size_t i = 0; i < data_size_; i++)
-			{
-				data_[i] = other.data_[i];
-			}
+			memcpy(this->data_,other.data_,sizeof(pixel)*data_size_);
 		}
 		
 	public:
@@ -116,6 +123,9 @@ namespace app
 		int get_height() const {
 			return height_;
 		}
+		int get_stride() const {
+			return stride_;
+		}
 		BYTE* get_buffer() const {
 			return (BYTE*)data_;
 		}
@@ -123,6 +133,7 @@ namespace app
 	private:
 		int width_;
 		int height_;
+		int stride_;
 
 		int data_size_;
 		pixel* data_;

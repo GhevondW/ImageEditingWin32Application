@@ -15,6 +15,7 @@
 #include "BoxBlurFilter.h"
 #include "BoxBlurHelper.h"
 #include "InvertFilter.h"
+#include "Types.h"
 
 
 #pragma comment (lib,"Gdiplus.lib")
@@ -46,11 +47,7 @@ namespace
 	int real_width{};
 	int real_height{};
 
-	typedef app::Image<app::BGRA> Image;
-	typedef app::FilterBase<app::BGRA> FilterBase;
-	typedef app::BoxBlurFilter<app::BGRA> BoxBlurFilter;
-	typedef app::BWFilter<app::BGRA> BWFilter;
-	typedef app::InvertFilter<app::BGRA> InvertFilter;
+	
 
 	const RECT main_area{main_area_x,main_area_y,main_area_width + main_area_x,main_area_height + main_area_y};
 	Mode mode = Mode::origin;
@@ -298,16 +295,17 @@ namespace
 		}
 		case WM_LBUTTONDOWN:
 		{
-			int x = LOWORD(lParam);
-			int y = HIWORD(lParam);
+			if (mode == Mode::processed) {
+				int x = LOWORD(lParam);
+				int y = HIWORD(lParam);
 
-			if (x >= real_x && x <= real_x + real_width) {
-				if (y >= real_y && y <= real_y + real_height) {
-					mode = Mode::origin;
-					SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
+				if (x >= real_x && x <= real_x + real_width) {
+					if (y >= real_y && y <= real_y + real_height) {
+						mode = Mode::origin;
+						SendMessage(dialog, WM_PAINT, WM_PAINT_PARAM, 0);
+					}
 				}
 			}
-
 			break;
 		}
 		case WM_PAINT:
@@ -345,7 +343,11 @@ namespace
 
 
 	Gdiplus::Bitmap* get_bitmap(Image* img) {
-		Gdiplus::Bitmap* bmp = new Bitmap(img->get_width(), img->get_height(), iStride, PixelFormat32bppARGB, img->get_buffer());
+		Gdiplus::Bitmap* bmp = new Bitmap(img->get_width(), 
+			img->get_height(),
+			img->get_stride(),
+			PixelFormat32bppARGB, 
+			img->get_buffer());
 		return bmp;
 	}
 }
