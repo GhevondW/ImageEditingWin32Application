@@ -55,13 +55,13 @@ namespace app
 
 					for (int j = 0; j < this->image_->get_width(); j++)
 					{
-						if (j - radius_ / 2 >= 0 && j + 1 + radius_ / 2 < this->image_->get_width()) {
-							auto temp_old_pixel = this->image_->at(i, j - radius_ / 2);
+						if (j - 1 - radius_ / 2 >= 0 && j + radius_ / 2 < this->image_->get_width()) {
+							auto temp_old_pixel = this->image_->at(i, j - 1 - radius_ / 2);
 
 							sum -= temp_old_pixel[c];
 
 
-							auto temp_new_pixel = this->image_->at(i, j + 1 + radius_ / 2);
+							auto temp_new_pixel = this->image_->at(i, j + radius_ / 2);
 							sum += temp_new_pixel[c];
 
 							result_avg = sum / radius_;
